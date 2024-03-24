@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static com.app.RentWheelz.config.Constants.*;
+
 @Service
 public class UserService {
     @Autowired
@@ -28,7 +30,7 @@ public class UserService {
         try {
             List<String> validations = UserHelper.validateUser(userDto);
             if (validations.isEmpty()) {
-                if (userRepository.findByUserName(userDto.getUserName()) == null && userRepository.findByEmail(userDto.getEmail()) == null) {
+                if (userRepository.findByUserName(userDto.getUserName()) == NULL_CHECK && userRepository.findByEmail(userDto.getEmail()) == NULL_CHECK) {
                     User user = this.modelMapper.map(userDto, User.class);
                     user.setUserName(userDto.getUserName());
                     user.setEmail(userDto.getEmail());
@@ -40,25 +42,25 @@ public class UserService {
                     user.setMobileNumber(userDto.getMobileNumber());
                     User savedUser = this.userRepository.save(user);
                     logger.info("Exit from UserService.registration:{}", savedUser);
-                    return new ApiResponse("Success!", "User registered successfully", null);
+                    return new ApiResponse(SUCCESS_STATUS, SUCCESSFUL_REGISTER_MESSAGE, null);
                 } else {
                     User u1 = this.userRepository.findByUserName(userDto.getUserName());
                     User u2 = this.userRepository.findByEmail(userDto.getEmail());
-                    if (u1 != null && u2 != null) {
-                        throw new BadRequestException("User with userName: " + u1.getUserName() + " and Email: " + u2.getEmail() + " already exists");
-                    } else if (u1 != null) {
-                        throw new BadRequestException("User with userName: " + u1.getUserName() + " already exists");
-                    } else if (u2 != null) {
-                        throw new BadRequestException("User with email: " + u2.getEmail() + " already exists");
+                    if (u1 != NULL_CHECK && u2 != NULL_CHECK) {
+                        throw new BadRequestException(USER_WITH_USERNAME + u1.getUserName() + AND_EMAIL + u2.getEmail() + ALREADY_EXISTS);
+                    } else if (u1 != NULL_CHECK) {
+                        throw new BadRequestException(USER_WITH_USERNAME + u1.getUserName() + ALREADY_EXISTS);
+                    } else if (u2 != NULL_CHECK) {
+                        throw new BadRequestException(USER_WITH_EMAIL + u2.getEmail() + ALREADY_EXISTS);
                     }
                 }
             }
-            ApiResponse response = new ApiResponse("Failure", "There are some violated fields", validations);
+            ApiResponse response = new ApiResponse(FAILURE_STATUS, VIOLATED_FIELD_MESSAGE, validations);
             logger.info("Exit from UserService.registration:{}", response);
             return response;
         }
         catch (NullPointerException ex){
-            throw new BadRequestException("Request body cannot be null");
+            throw new BadRequestException(NULL_REQUEST);
         }
     }
 

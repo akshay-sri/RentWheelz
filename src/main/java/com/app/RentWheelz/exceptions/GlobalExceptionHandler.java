@@ -5,11 +5,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import static com.app.RentWheelz.config.Constants.BAD_REQUEST;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ErrorDetails> handleBadRequestException(BadRequestException ex){
-        ErrorDetails errorDetails = new ErrorDetails("Bad Request",ex.getMessage());
+        ErrorDetails errorDetails = new ErrorDetails(BAD_REQUEST,ex.getMessage());
         return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
 }

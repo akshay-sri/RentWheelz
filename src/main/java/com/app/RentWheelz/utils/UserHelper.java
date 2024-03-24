@@ -1,6 +1,5 @@
 package com.app.RentWheelz.utils;
 
-import com.app.RentWheelz.config.Constants;
 import com.app.RentWheelz.payloads.UserDto;
 import com.app.RentWheelz.services.UserService;
 import lombok.Getter;
@@ -11,6 +10,8 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
+
+import static com.app.RentWheelz.config.Constants.*;
 
 @Getter
 @Setter
@@ -24,14 +25,14 @@ public class UserHelper {
     public static List<String> validateUser(UserDto user) {
         logger.info("Inside UserHelper.validateUser");
         List<String> validationErrors = new ArrayList<>();
-        validateFieldNotEmpty(user.getUserName(), "userName", validationErrors);
-        validatePatternMatches(user.getEmail(), "email", validationErrors);
-        validatePatternMatches(user.getPassword(), "password", validationErrors);
-        validateFieldNotEmpty(user.getProofId(), "proofId", validationErrors);
-        validatePatternMatches(user.getGender().toString(), "gender", validationErrors);
-        validatePatternMatches(user.getMobileNumber(), "mobileNumber", validationErrors);
-        validateFieldNotEmpty(user.getFirstName(), "firstName", validationErrors);
-        validateFieldNotEmpty(user.getLastName(), "lastName", validationErrors);
+        validateFieldNotEmpty(user.getUserName(), USERNAME, validationErrors);
+        validatePatternMatches(user.getEmail(), EMAIL, validationErrors);
+        validatePatternMatches(user.getPassword(), PASSWORD, validationErrors);
+        validateFieldNotEmpty(user.getProofId(), PROOF_ID, validationErrors);
+        validatePatternMatches(user.getGender().toString(), GENDER, validationErrors);
+        validatePatternMatches(user.getMobileNumber(), MOBILE_NUMBER, validationErrors);
+        validateFieldNotEmpty(user.getFirstName(), FIRSTNAME, validationErrors);
+        validateFieldNotEmpty(user.getLastName(), LASTNAME, validationErrors);
         if (!validationErrors.isEmpty()) {
             logger.error("Validation errors for User: {}", validationErrors);
         }
@@ -40,30 +41,30 @@ public class UserHelper {
     }
 
     private static void validateFieldNotEmpty(String fieldValue, String fieldName, List<String> errors) {
-        if (fieldValue == null || fieldValue.isEmpty()) {
-            errors.add(fieldName + " is required");
+        if (fieldValue == NULL_CHECK || fieldValue.isEmpty()) {
+            errors.add(fieldName + IS_REQUIRED);
         }
     }
 
     private static void validatePatternMatches(String fieldValue, String fieldName, List<String> errors) {
-        if (fieldValue == null || fieldValue.isEmpty()) {
-            errors.add(fieldName + "is required");
+        if (fieldValue == NULL_CHECK || fieldValue.isEmpty()) {
+            errors.add(fieldName + IS_REQUIRED);
         } else {
-            if (fieldName == "email") {
-                if (!Pattern.matches(Constants.EMAIL_REGEX, fieldValue)) {
-                    errors.add(fieldName + " should match the pattern");
+            if (fieldName == EMAIL) {
+                if (!Pattern.matches(EMAIL_REGEX, fieldValue)) {
+                    errors.add(fieldName + PATTERN_MATCH_MESSAGE);
                 }
-            } else if (fieldName == "password") {
-                if (!Pattern.matches(Constants.PASSWORD_REGEX, fieldValue)) {
-                    errors.add(fieldName + " should match the pattern");
+            } else if (fieldName == PASSWORD) {
+                if (!Pattern.matches(PASSWORD_REGEX, fieldValue)) {
+                    errors.add(fieldName + PATTERN_MATCH_MESSAGE);
                 }
-            } else if (fieldName=="gender") {
-                if(!Pattern.matches(Constants.GENDER_REGEX,fieldValue)){
-                    errors.add(fieldName+" should match the pattern");
+            } else if (fieldName==GENDER) {
+                if(!Pattern.matches(GENDER_REGEX,fieldValue)){
+                    errors.add(fieldName+PATTERN_MATCH_MESSAGE);
                 }
             } else {
-                if (Pattern.matches(Constants.MOBILE_NUMBER_REGEX, fieldValue)) {
-                    errors.add(fieldName + " should match the pattern");
+                if (Pattern.matches(MOBILE_NUMBER_REGEX, fieldValue)) {
+                    errors.add(fieldName + PATTERN_MATCH_MESSAGE);
                 }
             }
         }
