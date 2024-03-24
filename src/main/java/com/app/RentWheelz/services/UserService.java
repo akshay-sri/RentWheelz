@@ -2,8 +2,9 @@ package com.app.RentWheelz.services;
 
 import com.app.RentWheelz.exceptions.BadRequestException;
 import com.app.RentWheelz.models.User;
+import com.app.RentWheelz.payloads.LoginRequest;
 import com.app.RentWheelz.payloads.ApiResponse;
-import com.app.RentWheelz.payloads.UserDto;
+import com.app.RentWheelz.payloads.RegisterRequest;
 import com.app.RentWheelz.repositories.UserRepository;
 import com.app.RentWheelz.utils.UserHelper;
 import org.modelmapper.ModelMapper;
@@ -25,10 +26,10 @@ public class UserService {
 
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
-    public ApiResponse registration(UserDto userDto) {
+    public ApiResponse registration(RegisterRequest userDto) {
         logger.info("Inside UserService.registration");
         try {
-            List<String> validations = UserHelper.validateUser(userDto);
+            List<String> validations = UserHelper.validateRegisterUser(userDto);
             if (validations.isEmpty()) {
                 if (userRepository.findByUserName(userDto.getUserName()) == NULL_CHECK && userRepository.findByEmail(userDto.getEmail()) == NULL_CHECK) {
                     User user = this.modelMapper.map(userDto, User.class);
@@ -63,5 +64,33 @@ public class UserService {
             throw new BadRequestException(NULL_REQUEST);
         }
     }
-
+    public ApiResponse login(LoginRequest request) {
+        logger.info("Inside UserService.login");
+        try{
+            List<String> validations = UserHelper.validateLoginUser(request);
+            if(validations.isEmpty()){
+                User user = this.userRepository.findByUserName(request.getUserName());
+                if(user!=NULL_CHECK){
+                    if(user.getPassword().equals(request.getPassword())){
+                        logger.info("Exit from UserService.login:{}",user);
+                        return new ApiResponse(SUCCESS_STATUS,SUCCESSFUL_LOGIN_MESSAGE,EMPTY_LIST);
+                    }
+                    else{
+                        throw new BadRequestException(INCORRECT_PASSWORD);
+                    }
+                }
+                else{
+                    throw new BadRequestException(USER_WITH_USERNAME+request.getUserName()+NOT_FOUND);
+                }
+            }
+            else{
+                ApiResponse response = new ApiResponse(FAILURE_STATUS, VIOLATED_FIELD_MESSAGE, validations);
+                logger.info("Exit from UserService.login:{}",response);
+                return response;
+            }
+        }
+        catch (NullPointerException e){
+            throw new BadRequestException(NULL_REQUEST);
+        }
+    }
 }

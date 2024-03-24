@@ -1,6 +1,5 @@
 package com.app.RentWheelz.payloads;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
 @Getter
@@ -8,7 +7,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class UserDto {
+public class RegisterRequest {
     private int userId;
     private String userName;
     private String email;
