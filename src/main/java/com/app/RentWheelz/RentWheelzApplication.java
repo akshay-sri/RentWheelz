@@ -10,5 +10,4 @@ public class RentWheelzApplication {
 		SpringApplication.run(RentWheelzApplication.class, args);
 	}
 
-
 }
