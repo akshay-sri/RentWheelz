@@ -1,7 +1,8 @@
 package com.app.RentWheelz.controllers;
 
+import com.app.RentWheelz.payloads.LoginRequest;
 import com.app.RentWheelz.payloads.ApiResponse;
-import com.app.RentWheelz.payloads.UserDto;
+import com.app.RentWheelz.payloads.RegisterRequest;
 import com.app.RentWheelz.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,10 +21,17 @@ public class UserController {
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse> registration(@RequestBody UserDto userDto) {
+    public ResponseEntity<ApiResponse> registration(@RequestBody RegisterRequest userDto) {
         logger.info("Inside UserController.registration:{}", userDto);
         ApiResponse response = this.userService.registration(userDto);
         logger.info("Exit from UserController.registration");
         return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
+    }
+    @PostMapping("/login")
+    public ResponseEntity<ApiResponse> login(@RequestBody LoginRequest request){
+        logger.info("Inside UserController.login", request);
+        ApiResponse response = this.userService.login(request);
+        logger.info("Exit from UserController.login");
+        return new ResponseEntity<ApiResponse>(response,HttpStatus.OK);
     }
 }

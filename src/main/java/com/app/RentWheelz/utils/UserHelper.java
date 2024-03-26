@@ -1,6 +1,7 @@
 package com.app.RentWheelz.utils;
 
-import com.app.RentWheelz.payloads.UserDto;
+import com.app.RentWheelz.payloads.LoginRequest;
+import com.app.RentWheelz.payloads.RegisterRequest;
 import com.app.RentWheelz.services.UserService;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,8 +23,8 @@ public class UserHelper {
 
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
-    public static List<String> validateUser(UserDto user) {
-        logger.info("Inside UserHelper.validateUser");
+    public static List<String> validateRegisterUser(RegisterRequest user) {
+        logger.info("Inside UserHelper.validateRegisterUser");
         List<String> validationErrors = new ArrayList<>();
         validateFieldNotEmpty(user.getUserName(), USERNAME, validationErrors);
         validatePatternMatches(user.getEmail(), EMAIL, validationErrors);
@@ -36,7 +37,7 @@ public class UserHelper {
         if (!validationErrors.isEmpty()) {
             logger.error("Validation errors for User: {}", validationErrors);
         }
-        logger.info("Exit from UserHelper.validateUser");
+        logger.info("Exit from UserHelper.validateRegisterUser");
         return validationErrors;
     }
 
@@ -68,5 +69,17 @@ public class UserHelper {
                 }
             }
         }
+    }
+
+    public static List<String> validateLoginUser(LoginRequest request) {
+        logger.info("Inside UserHelper.validateLoginUser");
+        List<String> validationErrors = new ArrayList<>();
+        validateFieldNotEmpty(request.getUserName(), USERNAME, validationErrors);
+        validateFieldNotEmpty(request.getPassword(), PASSWORD, validationErrors);
+        if (!validationErrors.isEmpty()) {
+            logger.error("Validation errors for User: {}", validationErrors);
+        }
+        logger.info("Exit from UserHelper.validateLoginUser");
+        return validationErrors;
     }
 }

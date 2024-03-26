@@ -2,6 +2,9 @@ package com.app.RentWheelz.config;
 
 import lombok.Getter;
 
+import java.util.Collections;
+import java.util.List;
+
 @Getter
 public class Constants {
     public static final String EMAIL_REGEX = ".+@.+\\.[a-z]+";
@@ -33,4 +36,8 @@ public class Constants {
     public static final String PATTERN_MATCH_MESSAGE = " should match the pattern";
     public static final Object NULL_CHECK = null;
     public static final String BAD_REQUEST = "Bad Request";
+    public static final String NOT_FOUND = " not found";
+    public static final String SUCCESSFUL_LOGIN_MESSAGE = "User login successfully";
+    public static final String INCORRECT_PASSWORD = "Entered password is incorrect";
+    public static final List<String> EMPTY_LIST = Collections.emptyList();
 }
