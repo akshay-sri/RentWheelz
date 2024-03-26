@@ -31,7 +31,7 @@ public class UserService {
         try {
             List<String> validations = UserHelper.validateRegisterUser(userDto);
             if (validations.isEmpty()) {
-                if (userRepository.findByUserName(userDto.getUserName()) == NULL_CHECK && userRepository.findByEmail(userDto.getEmail()) == NULL_CHECK) {
+                if (userRepository.findByUserName(userDto.getUserName()) == NULL_CHECK && userRepository.findByEmail(userDto.getEmail()) == NULL_CHECK && userRepository.findByMobileNumber(userDto.getMobileNumber()) == NULL_CHECK) {
                     User user = this.modelMapper.map(userDto, User.class);
                     user.setUserName(userDto.getUserName());
                     user.setEmail(userDto.getEmail());
@@ -43,54 +43,82 @@ public class UserService {
                     user.setMobileNumber(userDto.getMobileNumber());
                     User savedUser = this.userRepository.save(user);
                     logger.info("Exit from UserService.registration:{}", savedUser);
-                    return new ApiResponse(SUCCESS_STATUS, SUCCESSFUL_REGISTER_MESSAGE, null);
+                    return new ApiResponse(SUCCESS_STATUS, SUCCESSFUL_REGISTER_MESSAGE, EMPTY_LIST);
                 } else {
                     User u1 = this.userRepository.findByUserName(userDto.getUserName());
                     User u2 = this.userRepository.findByEmail(userDto.getEmail());
-                    if (u1 != NULL_CHECK && u2 != NULL_CHECK) {
-                        throw new BadRequestException(USER_WITH_USERNAME + u1.getUserName() + AND_EMAIL + u2.getEmail() + ALREADY_EXISTS);
+                    User u3 = this.userRepository.findByMobileNumber(userDto.getMobileNumber());
+                    if (u1 != NULL_CHECK && u2 != NULL_CHECK && u3 != NULL_CHECK) {
+                        logger.error(USER_WITH_USERNAME + u1.getUserName() + AND_EMAIL + u2.getEmail() + ALREADY_EXISTS);
+                        throw new BadRequestException(USER_WITH_USERNAME + u1.getUserName() + AND_EMAIL + u2.getEmail() + ALREADY_EXISTS+AND_MOBILE_NUMBER+u3.getMobileNumber()+ALREADY_EXISTS);
                     } else if (u1 != NULL_CHECK) {
+                        logger.error(USER_WITH_USERNAME + u1.getUserName() + ALREADY_EXISTS);
                         throw new BadRequestException(USER_WITH_USERNAME + u1.getUserName() + ALREADY_EXISTS);
                     } else if (u2 != NULL_CHECK) {
+                        logger.error(USER_WITH_EMAIL + u2.getEmail() + ALREADY_EXISTS);
                         throw new BadRequestException(USER_WITH_EMAIL + u2.getEmail() + ALREADY_EXISTS);
+                    } else if (u3 != NULL_CHECK) {
+                        logger.error(USER_WITH_MOBILE_NUMBER + u3.getMobileNumber() + ALREADY_EXISTS);
+                        throw new BadRequestException(USER_WITH_MOBILE_NUMBER + u3.getMobileNumber() + ALREADY_EXISTS);
                     }
                 }
             }
             ApiResponse response = new ApiResponse(FAILURE_STATUS, VIOLATED_FIELD_MESSAGE, validations);
             logger.info("Exit from UserService.registration:{}", response);
             return response;
-        }
-        catch (NullPointerException ex){
+        } catch (NullPointerException ex) {
+            logger.error(NULL_REQUEST);
             throw new BadRequestException(NULL_REQUEST);
         }
     }
+
     public ApiResponse login(LoginRequest request) {
         logger.info("Inside UserService.login");
-        try{
+        try {
             List<String> validations = UserHelper.validateLoginUser(request);
-            if(validations.isEmpty()){
+            if (validations.isEmpty()) {
                 User user = this.userRepository.findByUserName(request.getUserName());
-                if(user!=NULL_CHECK){
-                    if(user.getPassword().equals(request.getPassword())){
-                        logger.info("Exit from UserService.login:{}",user);
-                        return new ApiResponse(SUCCESS_STATUS,SUCCESSFUL_LOGIN_MESSAGE,EMPTY_LIST);
-                    }
-                    else{
+                if (user != NULL_CHECK) {
+                    if (user.getPassword().equals(request.getPassword())) {
+                        logger.info("Exit from UserService.login:{}", user);
+                        return new ApiResponse(SUCCESS_STATUS, SUCCESSFUL_LOGIN_MESSAGE, EMPTY_LIST);
+                    } else {
+                        logger.error(INCORRECT_PASSWORD);
                         throw new BadRequestException(INCORRECT_PASSWORD);
                     }
+                } else {
+                    logger.error(USER_WITH_USERNAME + request.getUserName() + NOT_FOUND);
+                    throw new BadRequestException(USER_WITH_USERNAME + request.getUserName() + NOT_FOUND);
                 }
-                else{
-                    throw new BadRequestException(USER_WITH_USERNAME+request.getUserName()+NOT_FOUND);
-                }
-            }
-            else{
+            } else {
                 ApiResponse response = new ApiResponse(FAILURE_STATUS, VIOLATED_FIELD_MESSAGE, validations);
-                logger.info("Exit from UserService.login:{}",response);
+                logger.info("Exit from UserService.login:{}", response);
                 return response;
             }
-        }
-        catch (NullPointerException e){
+        } catch (NullPointerException e) {
+            logger.error(NULL_REQUEST);
             throw new BadRequestException(NULL_REQUEST);
+        }
+    }
+
+    public RegisterRequest myProfile(String userName) {
+        logger.info("Inside UserService.myProfile");
+        try {
+            User user = this.userRepository.findByUserName(userName);
+            RegisterRequest response = this.modelMapper.map(user, RegisterRequest.class);
+            response.setEmail(user.getEmail());
+            response.setPassword(user.getPassword());
+            response.setGender(user.getGender());
+            response.setUserName(user.getUserName());
+            response.setFirstName(user.getFirstName());
+            response.setLastName(user.getLastName());
+            response.setMobileNumber(user.getMobileNumber());
+            response.setProofId(user.getProofId());
+            logger.info("Exit from UserService.myProfile:{}", response);
+            return response;
+        } catch (IllegalArgumentException e) {
+            logger.error(USER_WITH_USERNAME + userName + NOT_FOUND);
+            throw new BadRequestException(USER_WITH_USERNAME + userName + NOT_FOUND);
         }
     }
 }
