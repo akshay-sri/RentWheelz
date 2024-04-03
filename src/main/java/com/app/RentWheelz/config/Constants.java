@@ -20,7 +20,7 @@ public class Constants {
     public static final String SUCCESSFUL_REGISTER_MESSAGE = "User registered successfully";
     public static final String SUCCESS_STATUS = "Success!";
     public static final String USER_WITH_USERNAME = "User with userName: ";
-    public static final String AND_EMAIL = " and Email: ";
+    public static final String AND_EMAIL = " and email: ";
     public static final String USER_WITH_EMAIL = "User with email: ";
     public static final String FAILURE_STATUS = "Failure";
     public static final String VIOLATED_FIELD_MESSAGE = "There are some violated fields";
@@ -40,4 +40,6 @@ public class Constants {
     public static final String SUCCESSFUL_LOGIN_MESSAGE = "User login successfully";
     public static final String INCORRECT_PASSWORD = "Entered password is incorrect";
     public static final List<String> EMPTY_LIST = Collections.emptyList();
+    public static final String USER_WITH_MOBILE_NUMBER = "User with mobileNumber: ";
+    public static final String AND_MOBILE_NUMBER = " and mobileNumber: ";
 }
